@@ -1,0 +1,43 @@
+name: CI4 Pipeline
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: mbstring, intl, json, gd, mysql
+          coverage: none
+
+      - name: Install Composer
+        run: composer install --no-interaction --prefer-dist
+
+      - name: Copy .env
+        run: |
+          cp env .env
+          php spark key:generate
+
+      - name: Run PHP Linter
+        run: |
+          composer require --dev squizlabs/php_codesniffer
+          ./vendor/bin/phpcs app/
+
+      - name: Run CI4 Unit Tests
+        run: |
+          composer require --dev phpunit/phpunit
+          ./vendor/bin/phpunit
+
+      - name: CI Completed
+        run: echo "CI Pipeline finished successfully!"
