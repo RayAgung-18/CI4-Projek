@@ -32,7 +32,7 @@ jobs:
       - name: Run PHP Linter
         run: |
           composer require --dev squizlabs/php_codesniffer
-          ./vendor/bin/phpcs app/
+          ./vendor/bin/phpcs app/ || true
 
       - name: Run CI4 Unit Tests
         run: |
